@@ -100,9 +100,37 @@ monroe_wt_2 <- read_csv("https://data.bloomington.in.gov/dataset/2c81cfe3-62c2-4
 monroe_ts <- monroe_wt_2 %>% 
   mutate(date = mdy(date)) %>% 
   mutate(record_month = month(date)) %>% 
-  mutate(month_name = month.abb[record_month])
+  mutate(month_name = month.abb[record_month]) %>% 
+  mutate(month_name = fct_reorder(month_name, record_month))
+
+ggplot(data= monroe_ts, aes(month_name, y = total_k_wh)) + 
+  geom_jitter()
 ```
 
+### Part 3: Compound figures with 'patchwork'
+patchwork lets you put together graphs into a single figure
+
+```{r}
+graph_a <- ggplot(data = penguins, aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point()
+
+graph_b <- ggplot(data = penguins, aes(x = species, y = flipper_length_mm)) +
+  geom_jitter(aes(color = species), show.legend = FALSE)
+
+graph_b
+
+# Use | to put graphs side by side
+# Use the / to put graphs one over the other 
+
+graph_a | graph_b # graphs are now side by side
+(graph_a | graph_b)/ fish_plot # patchwork does graph locations based off of PEMDAS
+graph_c <- (graph_a | graph_b)/ fish_plot & theme_dark() # and sign will apply that thing to all of the graphs! Allows you to not have to update each graph individually
+graph_c
+
+ggsave(here("fig", "graph_c_hgw.png"), width = 5, height = 6)
+# can inset letters, customize titles, layout, sizes of panels, blank spaces. WOW. Fully customizable compound figures. 
+# look at patchwork documentation linked on Gauchospace
+```
 
 
 
