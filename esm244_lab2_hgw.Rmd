@@ -68,9 +68,40 @@ fish_plot <- ggplot(data = fish_noaa, aes(x = year, y = pounds)) +
 fish_plot
 
 ggplotly(fish_plot) # ggplotly makes your graph interactive - coool
+
+### Use gghighlight to highlight certain series
+
+ggplot(data = fish_noaa, aes(x = year, y = pounds, group = nmfs_name)) +
+  geom_line() +
+  theme_minimal() +
+  gghighlight(nmfs_name == "tunas")
+
+ggplot(data = fish_noaa, aes(x = year, y = pounds, group = nmfs_name)) +
+  geom_line(aes(color = nmfs_name)) +
+  theme_minimal() +
+  gghighlight(max(pounds) > 1e8)
 ```
 
+#### Read in data from a URL, 'lubridate()', 'mutate()', make a graph in months in logical order
 
+
+```{r}
+monroe_wt <- read_csv("https://data.bloomington.in.gov/dataset/2c81cfe3-62c2-46ed-8fcf-83c1880301d1/resource/e80a7601-69c9-4ec6-bc1b-64a162e8c330/download/dillmanmonthlyelectricitybills.csv") %>% 
+  clean_names() 
+
+# other .csv file online: (this is the correct file)
+monroe_wt_2 <- read_csv("https://data.bloomington.in.gov/dataset/2c81cfe3-62c2-46ed-8fcf-83c1880301d1/resource/13c8f7aa-af51-4008-80a9-56415c7c931e/download/mwtpdailyelectricitybclear.csv") %>% 
+  clean_names()
+
+# remember, there are costs and benefits of copying in from a url
+```
+
+```{r}
+monroe_ts <- monroe_wt_2 %>% 
+  mutate(date = mdy(date)) %>% 
+  mutate(record_month = month(date)) %>% 
+  mutate(month_name = month.abb[record_month])
+```
 
 
 
